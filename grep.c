@@ -55,6 +55,49 @@ options parser(int argc, char **argv, char *grep_ptrn) {
   return arg;
 }
 
+void output(int argc, char **argv, options arg, char *grep_ptrn,
+            regex_t *regex) {
+  char *word = NULL;
+
+  if (arg.pattern) {
+    word = arg.pattern;
+  } else {
+    word = argv[optind];
+  }
+
+  if (!word) {
+    fprintf(stderr, "There is no words to search\n");
+    return;
+  }
+
+  if (!argv[optind + (arg.pattern ? 0 : 1)]) {
+    fprintf(stderr, "There is no file to search into\n");
+    return;
+  }
+
+  if (arg.pattern) {
+    regcomp(regex, grep_ptrn, REG_ICASE | REG_EXTENDED);
+  } else {
+    regcomp(regex, word, arg.i);
+  }
+
+  if (arg.pattern) {
+    for (int i = optind; i < argc; i++) {
+      open_file(argv[i], regex, arg, optind + 1 < argc, i, argv);
+    }
+  } else {
+    for (int i = optind + 1; i < argc; i++) {
+      open_file(argv[i], regex, arg, optind + 2 < argc, i, argv);
+    }
+  }
+}
+
+void output_str(char *str, int n) {
+  for (int i = 0; i < n; i++) {
+    putchar(str[i]);
+  }
+}
+
 int main(int argc, char **argv) {
   if (argc > 2) {
     char grep_ptrn[10000] = "\0";
