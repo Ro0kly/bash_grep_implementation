@@ -98,6 +98,45 @@ void output_str(char *str, int n) {
   }
 }
 
+void open_file(char *filename, regex_t *regex, options arg, bool wname, int i,
+               char **argv) {
+  if (!filename) {
+    fprintf(stderr, "There is no name for file\n");
+    return;
+  }
+  FILE *file = fopen(filename, "r");
+  if (file) {
+    char str[10000];
+    str[0] = ' ';
+    int counter = 0;
+    int num = 1;
+    int str_number = 0;
+    while ((fgets(str, 10000, file) != NULL)) {
+      str_number++;
+      int regres = regexec(regex, str, 0, NULL, 0);
+      
+        if (arg.o == 1 && arg.v == 0 && arg.c == 0 && arg.l == 0) {
+          print_matched(argv[i], str, regex, arg, &str_number, wname);
+        } else if (arg.h) {
+          output_str(str, (int)strlen(str));
+          if (feof(file)) putchar('\n');
+        } else if (arg.c) {
+          counter++;
+        } else {
+          if (wname) printf("%s:", filename);
+          if (arg.n) printf("%d:", num);
+          output_str(str, (int)strlen(str));
+          if (feof(file)) putchar('\n');
+        }
+
+      
+    }
+    fclose(file);
+  } else {
+    fprintf(stderr, "File do not exit, name: %s\n", filename);
+  }
+}
+
 int main(int argc, char **argv) {
   if (argc > 2) {
     char grep_ptrn[10000] = "\0";
