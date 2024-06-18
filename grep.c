@@ -98,6 +98,26 @@ void output_str(char *str, int n) {
   }
 }
 
+void print_matched(char *filename, char *str, regex_t *regex, options arg,
+                   int *str_number, bool wname) {
+  regmatch_t match;
+  int shift = 0;
+  while (1) {
+    int res = regexec(regex, str + shift, 1, &match, 0);
+    if (res != 0)
+      break;
+    else {
+      if (arg.h == 0 && wname) printf("%s:", filename);
+      if (arg.n == 1) printf("%d:", *str_number);
+      for (int i = match.rm_so; i < match.rm_eo; i++) {
+        printf("%c", str[i + shift]);
+      }
+    }
+    printf("\n");
+    shift = shift + match.rm_eo;
+  }
+}
+
 void open_file(char *filename, regex_t *regex, options arg, bool wname, int i,
                char **argv) {
   if (!filename) {
