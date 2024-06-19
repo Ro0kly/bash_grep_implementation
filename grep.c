@@ -55,6 +55,18 @@ options parser(int argc, char **argv, char *grep_ptrn) {
   return arg;
 }
 
+void grep_ptrn_append(char *grep_ptrn, char *new_ptrn) {
+  char strg[10000];
+  if (strlen(grep_ptrn) == 0) {
+    sprintf(strg, "(%s)", new_ptrn);
+    strcat(grep_ptrn, strg);
+  } else {
+    strcat(grep_ptrn, "|");
+    sprintf(strg, "(%s)", new_ptrn);
+    strcat(grep_ptrn, strg);
+  }
+}
+
 void output(int argc, char **argv, options arg, char *grep_ptrn,
             regex_t *regex) {
   char *word = NULL;
