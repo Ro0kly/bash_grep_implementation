@@ -9,7 +9,7 @@ typedef struct options {
   int e, i, v, c, l, n, h, s, f, o;
   char *pattern;
 } options;
-
+//NOTE: Add another parse for option with file
 options parser(int argc, char **argv, char *grep_ptrn) {
   options arg = {0};
   int opt = 0;
