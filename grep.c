@@ -67,6 +67,22 @@ void grep_ptrn_append(char *grep_ptrn, char *new_ptrn) {
   }
 }
 
+void grep_ptrn_append_ffile(char *grep_ptrn, char *file_name) {
+  char strg[10000];
+  FILE *file = NULL;
+  file = fopen(file_name, "r");
+  if (file) {
+    while ((fgets(strg, 10000, file)) != NULL) {
+      int n = (int)strlen(strg);
+      if (strg[n - 1] == '\n') strg[n - 1] = '\0';
+      grep_ptrn_append(grep_ptrn, strg);
+    }
+    fclose(file);
+  } else {
+    fprintf(stderr, "File do not exit, name: %s\n", file_name);
+  }
+}
+
 void output(int argc, char **argv, options arg, char *grep_ptrn,
             regex_t *regex) {
   char *word = NULL;
