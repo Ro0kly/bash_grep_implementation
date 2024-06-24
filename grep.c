@@ -162,7 +162,12 @@ void open_file(char *filename, regex_t *regex, options arg, bool wname, int i,
     while ((fgets(str, 10000, file) != NULL)) {
       str_number++;
       int regres = regexec(regex, str, 0, NULL, 0);
-      
+
+      if (regres == 0 && arg.l) {
+        printf("%s\n", filename);
+        break;
+      }
+      if (regres == 0 && !arg.v) {
         if (arg.o == 1 && arg.v == 0 && arg.c == 0 && arg.l == 0) {
           print_matched(argv[i], str, regex, arg, &str_number, wname);
         } else if (arg.h) {
@@ -177,7 +182,17 @@ void open_file(char *filename, regex_t *regex, options arg, bool wname, int i,
           if (feof(file)) putchar('\n');
         }
 
-      
+      } else if (regres == 1 && arg.v) {
+        if (wname) printf("%s:", filename);
+        output_str(str, (int)strlen(str));
+        if (feof(file)) putchar('\n');
+      }
+      if (arg.n) num++;
+    }
+    if (arg.c) {
+      if (wname) printf("%s:", filename);
+      printf("%d", counter);
+      printf("\n");
     }
     fclose(file);
   } else {
