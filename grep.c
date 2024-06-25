@@ -17,6 +17,8 @@ options parser(int argc, char **argv, char *grep_ptrn) {
     switch (opt) {
       case 'e':
         arg.e = 1;
+        arg.pattern = optarg;
+        grep_ptrn_append(grep_ptrn, optarg);
         break;
       case 'i':
         arg.i = REG_ICASE;
@@ -41,6 +43,7 @@ options parser(int argc, char **argv, char *grep_ptrn) {
         break;
       case 'f':
         arg.f = 1;
+        grep_ptrn_append_ffile(grep_ptrn, optarg);
         break;
       case 'o':
         arg.o = 1;
