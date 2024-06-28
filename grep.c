@@ -38,6 +38,26 @@ void grep_ptrn_append_ffile(char *grep_ptrn, char *file_name) {
   }
 }
 
+void print_matched(char *filename, char *str, regex_t *regex, options arg,
+                   int *str_number, bool wname) {
+  regmatch_t match;
+  int shift = 0;
+  while (1) {
+    int res = regexec(regex, str + shift, 1, &match, 0);
+    if (res != 0)
+      break;
+    else {
+      if (arg.h == 0 && wname) printf("%s:", filename);
+      if (arg.n == 1) printf("%d:", *str_number);
+      for (int i = match.rm_so; i < match.rm_eo; i++) {
+        printf("%c", str[i + shift]);
+      }
+    }
+    printf("\n");
+    shift = shift + match.rm_eo;
+  }
+}
+
 options parser(int argc, char **argv, char *grep_ptrn) {
   options arg = {0};
   int opt = 0;
@@ -86,66 +106,9 @@ options parser(int argc, char **argv, char *grep_ptrn) {
   return arg;
 }
 
-void output(int argc, char **argv, options arg, char *grep_ptrn,
-            regex_t *regex) {
-  char *word = NULL;
-
-  if (arg.pattern) {
-    word = arg.pattern;
-  } else {
-    word = argv[optind];
-  }
-
-  if (!word) {
-    fprintf(stderr, "There is no words to search\n");
-    return;
-  }
-
-  if (!argv[optind + (arg.pattern ? 0 : 1)]) {
-    fprintf(stderr, "There is no file to search into\n");
-    return;
-  }
-
-  if (arg.pattern) {
-    regcomp(regex, grep_ptrn, REG_ICASE | REG_EXTENDED);
-  } else {
-    regcomp(regex, word, arg.i);
-  }
-
-  if (arg.pattern) {
-    for (int i = optind; i < argc; i++) {
-      open_file(argv[i], regex, arg, optind + 1 < argc, i, argv);
-    }
-  } else {
-    for (int i = optind + 1; i < argc; i++) {
-      open_file(argv[i], regex, arg, optind + 2 < argc, i, argv);
-    }
-  }
-}
-
 void output_str(char *str, int n) {
   for (int i = 0; i < n; i++) {
     putchar(str[i]);
-  }
-}
-
-void print_matched(char *filename, char *str, regex_t *regex, options arg,
-                   int *str_number, bool wname) {
-  regmatch_t match;
-  int shift = 0;
-  while (1) {
-    int res = regexec(regex, str + shift, 1, &match, 0);
-    if (res != 0)
-      break;
-    else {
-      if (arg.h == 0 && wname) printf("%s:", filename);
-      if (arg.n == 1) printf("%d:", *str_number);
-      for (int i = match.rm_so; i < match.rm_eo; i++) {
-        printf("%c", str[i + shift]);
-      }
-    }
-    printf("\n");
-    shift = shift + match.rm_eo;
   }
 }
 
@@ -200,6 +163,43 @@ void open_file(char *filename, regex_t *regex, options arg, bool wname, int i,
     fclose(file);
   } else {
     fprintf(stderr, "File do not exit, name: %s\n", filename);
+  }
+}
+
+void output(int argc, char **argv, options arg, char *grep_ptrn,
+            regex_t *regex) {
+  char *word = NULL;
+
+  if (arg.pattern) {
+    word = arg.pattern;
+  } else {
+    word = argv[optind];
+  }
+
+  if (!word) {
+    fprintf(stderr, "There is no words to search\n");
+    return;
+  }
+
+  if (!argv[optind + (arg.pattern ? 0 : 1)]) {
+    fprintf(stderr, "There is no file to search into\n");
+    return;
+  }
+
+  if (arg.pattern) {
+    regcomp(regex, grep_ptrn, REG_ICASE | REG_EXTENDED);
+  } else {
+    regcomp(regex, word, arg.i);
+  }
+
+  if (arg.pattern) {
+    for (int i = optind; i < argc; i++) {
+      open_file(argv[i], regex, arg, optind + 1 < argc, i, argv);
+    }
+  } else {
+    for (int i = optind + 1; i < argc; i++) {
+      open_file(argv[i], regex, arg, optind + 2 < argc, i, argv);
+    }
   }
 }
 
