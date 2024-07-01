@@ -316,3 +316,39 @@ if diff tests/il_my_test.txt tests/il_grep_test.txt; then
 else
     echo "Problem with flag -il."
 fi
+
+echo "- - - - - - - - - - - - - - - - -"
+grep -ih $PATTERN_2_1 $TEST_FILE_1 > tests/ih_grep_test.txt
+./s21_grep -ih $PATTERN_2_1 $TEST_FILE_1 > tests/ih_my_test.txt
+
+echo "Check grep -ih option..."
+echo "./s21_grep -ih $PATTERN_2_1 $TEST_FILE_1"
+if diff tests/ih_my_test.txt tests/ih_grep_test.txt; then
+    echo "grep -ih flag is done."
+else
+    echo "Problem with flag -ih."
+fi
+
+echo "- - - - - - - - - - - - - - - - -"
+grep -io $PATTERN_2_1 $TEST_FILE_1 > tests/io_grep_test.txt
+./s21_grep -io $PATTERN_2_1 $TEST_FILE_1 > tests/io_my_test.txt
+
+echo "Check grep -io option..."
+echo "./s21_grep -io $PATTERN_2_1 $TEST_FILE_1"
+if diff tests/io_my_test.txt tests/io_grep_test.txt; then
+    echo "grep -io flag is done."
+else
+    echo "Problem with flag -io."
+fi
+
+echo "- - - - - - - - - - - - - - - - -"
+grep -n -e $PATTERN_2_1 $TEST_FILE_1 > tests/en_grep_test.txt
+./s21_grep -n -e $PATTERN_2_1 $TEST_FILE_1 > tests/en_my_test.txt
+
+echo "Check grep -n -e option..."
+echo "./s21_grep -n -e $PATTERN_2_1 $TEST_FILE_1"
+if diff tests/en_my_test.txt tests/en_grep_test.txt; then
+    echo "grep -n -e flag is done."
+else
+    echo "Problem with flag -n -e."
+fi
