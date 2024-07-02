@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm -rf s21_grep
+rm -rf tests
 make rebuild
 
 REGEX_PATTERN_FILE="regex_pattern.txt"
